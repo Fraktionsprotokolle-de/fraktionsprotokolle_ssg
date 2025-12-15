@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="tei2html">
+    <property name="index" value="./data/meta/about.xml"/>
+    <property name="target" value="./html"/>
+    <property name="target_xml" value="./html/downloads"/>
+    <delete>
+        <fileset dir="${target}" includes="*.html"/>
+    </delete>
+    <!-- Single pages -->
+    <xslt in="${index}" out="${target}/index.html" style="./xslt/index.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt in="${index}" out="${target}/404.html" style="./xslt/404.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt in="${index}" basedir="./data/einleitungen" destdir="${target}" includes="*.xml" out="${target}/einleitungen.html" style="./xslt/einleitungen.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"></factory>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"></classpath>
+    </xslt>
+    <xslt in="${index}" out="${target}/liste.html" style="./xslt/liste.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt in="${index}" out="${target}/suche.html" style="./xslt/search.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt style="./xslt/editions.xsl" basedir="./data/editions/" destdir="${target}" includes="**/*.xml">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+
+    <xslt style="./xslt/editions.xsl" basedir="./data/einleitungen" destdir="${target}" includes="*.xml">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt style="./xslt/meta.xsl" basedir="./data/meta" destdir="${target}" includes="*.xml">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+
+    <xslt in="./data/indices/Personen.xml" out="${target}/baecon.txt" style="./xslt/beacon.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt in="${index}" out="${target}/kalender.html" style="./xslt/kalender.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+
+    <xslt in="${index}" out="${target}/dummy.html" style="./xslt/statics/markdown.xsl" force="true">
+        <factory name="net.sf.saxon.TransformerFactoryImpl" />
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar">
+        </classpath>
+    </xslt>
+    <!--    <xslt in="./data/imprint.xml" out="${target}/imprint.html" style="./xslt/imprint.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon9he.jar"/>
+    </xslt>-->
+    <xslt in="./data/indices/Personen.xml" out="${target}/personenregister.html" style="./xslt/listperson.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <!--    <xslt in="./data/indices/listplace.xml" out="${target}/listplace.html" style="./xslt/listplace.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon9he.jar"/>
+    </xslt>-->
+    <xslt in="./data/indices/Organisationen.xml" out="${target}/listorg.html" style="./xslt/listorg.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+    <xslt in="${index}" out="${target}/literaturverzeichnis.html" style="./xslt/listliterature.xsl">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+        <classpath location="${basedir}/saxon/saxon-pe-12.3.jar"/>
+    </xslt>
+
+    <replace dir="${target}" value="">
+        <include name="*.html"/>
+        <replacetoken> xmlns=""</replacetoken>
+    </replace>
+    <replace dir="${target}" value="">
+        <include name="*.html"/>
+        <replacetoken>xmlns:tei="http://www.tei-c.org/ns/1.0"</replacetoken>
+    </replace>
+
+    <replace dir="${target}" value="">
+        <include name="*.html"/>
+        <replacetoken>xmlns="http://www.w3.org/1999/xhtml"</replacetoken>
+    </replace>
+    <copy todir="${target_xml}" flatten="true">
+        <fileset dir="./data/">
+            <include name="**/*.xml"/>
+        </fileset>
+    </copy>
+</project>

@@ -1,0 +1,308 @@
+package main
+
+import (
+	"database/sql"
+	"encoding/xml"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+type TEI struct {
+	XMLName xml.Name `xml:"TEI"`
+	Text    Text     `xml:"text"`
+}
+
+type Text struct {
+	Body Body `xml:"body"`
+}
+
+type Body struct {
+	ListPerson []ListPerson `xml:"listPerson"`
+}
+
+type ListPerson struct {
+	Type    string   `xml:"type,attr"`
+	Persons []Person `xml:"person"`
+}
+
+type Person struct {
+	ID          string        `xml:"id,attr"`
+	PersName    []PersName    `xml:"persName"`
+	Sex         Sex           `xml:"sex"`
+	Birth       Event         `xml:"birth"`
+	Death       Event         `xml:"death"`
+	Affiliation []Affiliation `xml:"affiliation"`
+	Idno        []Idno        `xml:"idno"`
+	isMDB       bool
+	Letter      string
+	GND         string
+	Found       bool
+}
+
+type PersName struct {
+	N        string    `xml:"n,attr,omitempty"`
+	Reg      string    `xml:"reg"`
+	Forename string    `xml:"forename"`
+	Surname  string    `xml:"surname"`
+	AddName  []AddName `xml:"addName"`
+	RoleName RoleName  `xml:"roleName"`
+}
+
+type AddName struct {
+	Type string `xml:"type,attr"`
+}
+
+type RoleName struct{}
+
+type Sex struct {
+	Value string `xml:"value,attr"`
+}
+
+type Event struct {
+	Date      Date   `xml:"date"`
+	PlaceName string `xml:"placeName"`
+	Country   string `xml:"country"`
+}
+
+type Date struct {
+	When string `xml:"when,attr"`
+}
+
+type Affiliation struct {
+	Type       string        `xml:"type,attr"`
+	Role       string        `xml:"role,attr,omitempty"`
+	Period     string        `xml:"period,attr,omitempty"`
+	From       string        `xml:"from,attr,omitempty"`
+	To         string        `xml:"to,attr,omitempty"`
+	Content    string        `xml:",chardata"`
+	SubEntries []Affiliation `xml:"affiliation"`
+}
+
+type Idno struct {
+	Type    string `xml:"type,attr"`
+	Content string `xml:",chardata"`
+}
+
+func removeDiacritics(s string) string {
+	return strings.Map(func(r rune) rune {
+		switch r {
+		case 'Ö':
+			return 'O'
+		case 'Ä':
+			return 'A'
+		case 'Ü':
+			return 'U'
+		case 'ß':
+			return 's'
+		default:
+			return r
+		}
+	}, s)
+}
+
+func loadAndDumpToSQLite() error {
+	// Load XML
+	pwd, _ := os.Getwd()
+	fp := filepath.Join(pwd, "..", "data", "indices", "Personen.xml")
+
+	var tei TEI
+	content, err := ioutil.ReadFile(fp)
+	if err != nil {
+		return fmt.Errorf("error reading file: %w", err)
+	}
+	err = xml.Unmarshal(content, &tei)
+	if err != nil {
+		return fmt.Errorf("error unmarshaling XML: %w", err)
+	}
+
+	// Create SQLite database
+	db, err := sql.Open("sqlite3", "persons.db")
+	if err != nil {
+		return fmt.Errorf("error opening database: %w", err)
+	}
+	defer db.Close()
+
+	// Create table
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS persons (
+		id TEXT PRIMARY KEY,
+		forename TEXT,
+		surname TEXT,
+		reg TEXT,
+		sex TEXT,
+		birth_date TEXT,
+		birth_place TEXT,
+		birth_country TEXT,
+		death_date TEXT,
+		death_place TEXT,
+		death_country TEXT,
+		isMDB BOOLEAN,
+		letter TEXT,
+		gnd TEXT,
+		found BOOLEAN
+	)`)
+
+	// Create table if it doesn't exist for Person Names
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS personNames (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		person_id TEXT,
+		n INTEGER,
+		forename TEXT,
+		surname TEXT,
+		reg TEXT,
+		addName TEXT,
+		roleName TEXT
+	)`)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create table if it doesn't exist
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS affiliations (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		person_id TEXT,
+		type TEXT,
+		role TEXT,
+		period TEXT,
+		"from" TEXT,
+		"to" TEXT,
+		content TEXT
+	)`)
+	if err != nil {
+		return fmt.Errorf("error creating table: %w", err)
+	}
+
+	// Prepare insert statement
+	stmt, err := db.Prepare(`INSERT OR REPLACE INTO persons
+		(id, forename, surname, reg, sex, birth_date, birth_place, birth_country, death_date, death_place, death_country, isMDB, letter, gnd, found)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return fmt.Errorf("error preparing statement: %w", err)
+	}
+	defer stmt.Close()
+
+	// Prepare insert statement for affiliations
+	stmt2, err := db.Prepare(`INSERT OR REPLACE INTO affiliations 
+		( person_id, type, role, period, "from", "to", content) 
+		VALUES ( ?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return fmt.Errorf("error preparing statement: %w", err)
+	}
+	defer stmt2.Close()
+
+	// Preare insert statement for personNames
+	stmt3, err := db.Prepare(`INSERT OR REPLACE INTO personNames 
+		( person_id, n, forename, surname, reg, addName, roleName) 
+		VALUES ( ?, ?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return fmt.Errorf("error preparing statement: %w", err)
+	}
+	defer stmt3.Close()
+
+	// Insert data
+	for _, lp := range tei.Text.Body.ListPerson {
+		fmt.Printf("Persons in list: %d\n", len(lp.Persons))
+		for _, p := range lp.Persons {
+
+			//fmt.Printf("Person: %s\n", p.PersName[0].Surname)
+
+			p.isMDB = false
+			if lp.Type == "MdB" {
+				p.isMDB = true
+			}
+
+			gnd := ""
+			for _, idno := range p.Idno {
+				if idno.Type == "GND" {
+					gnd = idno.Content
+				}
+			}
+			p.GND = gnd
+			p.Found = false
+
+			Letter := p.ID[0:1]
+			p.Letter = strings.ToUpper(Letter)
+
+			// Ensure Birth.Country and Death.Country are never null
+			if p.Birth.Country == "" {
+				p.Birth.Country = ""
+			}
+			if p.Death.Country == "" {
+				p.Death.Country = ""
+			}
+
+			_, err := stmt.Exec(
+				p.ID,
+				p.PersName[0].Forename,
+				p.PersName[0].Surname,
+				p.PersName[0].Reg,
+				p.Sex.Value,
+				p.Birth.Date.When,
+				p.Birth.PlaceName,
+				p.Birth.Country,
+				p.Death.Date.When,
+				p.Death.PlaceName,
+				p.Death.Country,
+				p.isMDB,
+				p.Letter,
+				p.GND,
+				p.Found,
+			)
+			if err != nil {
+				return fmt.Errorf("error inserting data: %w", err)
+			}
+
+			for _, a := range p.Affiliation {
+				_, err := stmt2.Exec(
+					p.ID,
+					a.Type,
+					a.Role,
+					a.Period,
+					a.From,
+					a.To,
+					a.Content,
+				)
+				if err != nil {
+					return fmt.Errorf("error inserting data: %w", err)
+				}
+			}
+
+			for _, name := range p.PersName {
+
+				_, err := stmt3.Exec(
+					p.ID,
+					name.N,
+					name.Forename,
+					name.Surname,
+					name.Reg,
+					strings.Join(func() []string {
+						addNames := []string{}
+						for _, an := range name.AddName {
+							addNames = append(addNames, an.Type)
+						}
+						return addNames
+					}(), ", "),
+					"", // RoleName is empty for now
+				)
+				if err != nil {
+					return fmt.Errorf("error inserting data: %w", err)
+				}
+			}
+		}
+	}
+
+	fmt.Println("Data successfully dumped to persons.db")
+	return nil
+}
+
+func main() {
+	if err := loadAndDumpToSQLite(); err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
+}
