@@ -42,13 +42,11 @@ Die Edition umfasst derzeit Protokolle von:
 ├── saxon/                  # Saxon XSLT-Prozessor
 ├── bin/                    # Build-Skripte
 ├── fetch_data.sh           # Daten-Download-Skript
-└── purge-css.js            # CSS-Bereinigungsskript
 
 ```
 
 **Wichtige Dateien:**
 - **[`fetch_data.sh`](fetch_data.sh)** - Skript zum Herunterladen der XML-Quelldaten
-- **[`purge-css.js`](purge-css.js)** - Node.js-Skript zur CSS-Optimierung
 - **[`.env`](.env)** - Konfigurationsdatei (nicht im Repository, muss lokal erstellt werden)
 
 ### CSS-Dateien
@@ -56,8 +54,6 @@ Die Edition umfasst derzeit Protokolle von:
 Die Stylesheets befinden sich im Verzeichnis **[`html/css/`](html/css/)**:
 
 - **[`kgparl.css`](html/css/kgparl.css)** - Haupt-Stylesheet mit allen Projektstilen
-- **[`kgparl.purged.css`](html/css/kgparl.purged.css)** - Bereinigte Version (nicht verwendete Styles entfernt)
-- **[`style.css`](html/css/style.css)** - Basis-Layout-Styles
 - **[`variables.css`](html/css/variables.css)** - CSS-Variablen und Theming
 
 Das Haupt-Stylesheet [`kgparl.css`](html/css/kgparl.css) enthält:
