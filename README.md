@@ -304,10 +304,6 @@ JavaScript-Dateien in [`html/js/`](html/js/) werden direkt in die HTML-Seiten ei
 
 Die generierten HTML-Dateien befinden sich im Verzeichnis [`html/`](html/) und können auf einen Webserver deployed werden. Für automatisiertes Deployment können die Variablen `REMOTE_HOST`, `REMOTE_USER` und `REMOTE_PATH` in [`.env`](.env) konfiguriert werden.
 
-## Lizenz
-
-Die Protokolle sind unter einer offenen Lizenz veröffentlicht. Details finden Sie im Impressum der Website.
-
 ## Kontakt
 
 - **Website**: https://www.fraktionsprotokolle.de
