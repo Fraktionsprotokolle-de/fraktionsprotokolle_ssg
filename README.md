@@ -1,10 +1,10 @@
-# Fraktionsprotokolle - Statische Webseite
+# Fraktionsprotokolle – Statische Webseite
 
-Statische Webseite für die digitale Edition »Fraktionen im Deutschen Bundestag 1949-2005« (KGParl).
+Erzeugung einer statischen Webseite für die digitale Edition »Fraktionen im Deutschen Bundestag 1949–2005«der Kommission für Geschichte des Parlamentarismus und der politischen Parteien, Berlin.
 
 ## Übersicht
 
-Dieses Projekt generiert eine statische HTML-Webseite aus TEI-XML-Quellen der parlamentarischen Fraktionsprotokolle. Die Edition wird veröffentlicht auf [fraktionsprotokolle.de](https://www.fraktionsprotokolle.de).
+Dieses Projekt generiert eine statische HTML-Webseite aus TEI-XML-Quellen der parlamentarischen Fraktionsprotokolle. 
 
 ## Datenquelle
 
@@ -47,7 +47,7 @@ Die Edition umfasst derzeit Protokolle von:
 
 **Wichtige Dateien:**
 - **[`fetch_data.sh`](fetch_data.sh)** - Skript zum Herunterladen der XML-Quelldaten
-- **[`.env`](.env)** - Konfigurationsdatei (nicht im Repository, muss lokal erstellt werden)
+- **[`.env`](.env)** - Konfigurationsdatei (nicht im Repository enthalten, muss lokal erstellt werden)
 
 ### CSS-Dateien
 
@@ -58,7 +58,7 @@ Die Stylesheets befinden sich im Verzeichnis **[`html/css/`](html/css/)**:
 
 Das Haupt-Stylesheet [`kgparl.css`](html/css/kgparl.css) enthält:
 - Layout-Definitionen für Protokollseiten
-- Tabellen-Styles (sortierbare Spalten, Hover-Effekte)
+- Tabellen-Stile (sortierbare Spalten, Hover-Effekte)
 - Navigationsleisten und Menüs
 - Typografie und Farbschema
 - Responsive Breakpoints
@@ -304,12 +304,6 @@ JavaScript-Dateien in [`html/js/`](html/js/) werden direkt in die HTML-Seiten ei
 
 Die generierten HTML-Dateien befinden sich im Verzeichnis [`html/`](html/) und können auf einen Webserver deployed werden. Für automatisiertes Deployment können die Variablen `REMOTE_HOST`, `REMOTE_USER` und `REMOTE_PATH` in [`.env`](.env) konfiguriert werden.
 
-## Kontakt
-
-- **Website**: https://www.fraktionsprotokolle.de
-- **E-Mail**: info@fraktionsprotokolle.de
-- **GitHub Issues**: https://github.com/Fraktionsprotokolle-de/fraktionsprotokolle_web/issues
-
 ## Technischer Stack
 
 - **Build-System**: Apache Ant, DSE-Static-Cookiecutter
@@ -327,6 +321,14 @@ Die generierten HTML-Dateien befinden sich im Verzeichnis [`html/`](html/) und k
 
 ## Lizenz
 
-Dieses Projekt basiert teilweise auf dse-static-cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter) des Austrian Centre for Digital Humanities and Cultural Heritage (ACDH-CH). Der entsprechende Code steht unter der MIT License. Details finden sich in der Datei `LICENSE`.
+Dieses Projekt steht unter der MIT License.
 
-Bitte beachten Sie, dass diese Lizenz **nicht** für etwaige im Projekt enthaltene Drittsoftware gilt, insbesondere für Saxon sowie CSS- und JavaScript-Bibliotheken. Für diese Komponenten gelten die jeweiligen Lizenzbedingungen der ursprünglichen Anbieter.
+Dieses Projekt basiert teilweise auf [dse-static-cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter) des Austrian Centre for Digital Humanities and Cultural Heritage (ACDH-CH). 
+
+Der daraus übernommene Code steht unter der MIT License. Details finden sich in der Datei `LICENSE`.
+
+Bitte beachten Sie, dass diese Lizenz **nicht** für für im Projekt enthaltene Drittsoftware gilt, insbesondere für Saxon sowie CSS- und JavaScript-Bibliotheken. Für diese Komponenten gelten die jeweiligen Lizenzbedingungen der ursprünglichen Anbieter.
+
+## Kontakt
+
+- **E-Mail**: info@fraktionsprotokolle.de
