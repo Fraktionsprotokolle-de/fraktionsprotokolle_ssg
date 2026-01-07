@@ -16,8 +16,8 @@ Die XML-Quellen werden aus dem öffentlichen GitHub-Repository bezogen:
 
 Die Edition umfasst derzeit Protokolle von:
 - **CDU/CSU-Fraktion**: 1.–7. Wahlperiode (1949–1976)
-- **SPD-Fraktion**: 1.–7. Wahlperiode (1949–1976)
-- **FDP-Fraktion**: 1.–5. Wahlperiode (1949–1969)
+- **SPD-Fraktion**: 1.–8. Wahlperiode (1949–1980)
+- **FDP-Fraktion**: 1.–9. Wahlperiode (1949–1983)
 - **CSU-Landesgruppe**: 1.–9. Wahlperiode (1949–1983)
 - **GRÜNE-Fraktion**: 10.–11. Wahlperiode (1983–1990)
 
@@ -324,3 +324,9 @@ Die generierten HTML-Dateien befinden sich im Verzeichnis [`html/`](html/) und k
   - Python (Indexierung, Datenverarbeitung)
   - Go (Build-Tools)
   - Shell (Build-Skripte)
+
+## Lizenz
+
+Dieses Projekt basiert teilweise auf dse-static-cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter) des Austrian Centre for Digital Humanities and Cultural Heritage (ACDH-CH). Der entsprechende Code steht unter der MIT License. Details finden sich in der Datei `LICENSE`.
+
+Bitte beachten Sie, dass diese Lizenz **nicht** für etwaige im Projekt enthaltene Drittsoftware gilt, insbesondere für Saxon sowie CSS- und JavaScript-Bibliotheken. Für diese Komponenten gelten die jeweiligen Lizenzbedingungen der ursprünglichen Anbieter.
