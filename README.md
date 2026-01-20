@@ -68,6 +68,7 @@ Das Haupt-Stylesheet [`kgparl.css`](html/css/kgparl.css) enthält:
 ### JavaScript-Dateien
 
 Die JavaScript-Dateien befinden sich im Verzeichnis **[`html/js/`](html/js/)**:
+**Bitte beachten: Die URL des Typesense-Hosts /-API muss in den JS Dateien händisch eingetragen werden. JS unterstützt von Hause aus keine *.env*-Dateien.**
 
 #### Hauptskripte
 
