@@ -153,10 +153,10 @@ var urlParams = new URLSearchParams(window.location.search);
 const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
     connectionTimeoutSeconds: 10000,
-    apiKey: "Hu52dwsas2AdxdE", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
+    apiKey: "[API Key Eintragen]", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
     nodes: [
       {
-        host: "typesense.testserver.stephan-makowski.de",
+        host: "[Serverhost Eintragen]",
         port: "8108",
         protocol: "https",
       },
