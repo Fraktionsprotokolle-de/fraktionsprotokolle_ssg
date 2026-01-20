@@ -30,12 +30,12 @@ $(document).ready(function () {
     let TypesenseSearchClientConfig = {
     nodes: [
       {
-        host: "typesense.testserver.stephan-makowski.de",
+        host: "[Server Eintragen]",
         port: "8108",
         protocol: "https",
       },
     ],
-    apiKey: "Hu52dwsas2AdxdE", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
+    apiKey: "[API Key Eintragen]", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
     numRetries: 3,
     connectionTimeoutSeconds: 10,
     use_cache: true,
