@@ -30,12 +30,12 @@ const customHits = instantsearch.connectors.connectHits(renderHits);
 let TypesenseSearchClientConfig = {
   nodes: [
     {
-      host: "typesense.testserver.stephan-makowski.de",
+      host: "Serverhost Eintragen",
       port: "8108",
       protocol: "https",
     },
   ],
-  apiKey: "Hu52dwsas2AdxdE", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
+  apiKey: "[API Key Eintragen]", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
   numRetries: 3,
   connectionTimeoutSeconds: 10,
 };
@@ -60,7 +60,7 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
     apiKey: "Hu52dwsas2AdxdE", // Be sure to use an API key that only has search permissions, since this is exposed in the browser
     nodes: [
       {
-        host: "typesense.testserver.stephan-makowski.de",
+        host: "[Serverhost Eintragen]",
         port: "8108",
         protocol: "https",
       },
