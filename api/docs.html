@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGParl Fraktionsprotokolle API - Dokumentation</title>
+    <meta name="description" content="REST API Dokumentation für die Fraktionsprotokolle der KGParl">
+    <link rel="icon" type="image/png" href="https://fraktionsprotokolle.de/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4d7310;
+            --primary-dark: #3d5c0d;
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* ReDoc Customization */
+        .redoc-wrap {
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        /* Custom Header */
+        .api-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .api-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .api-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .api-header .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+            color: var(--text-color);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            margin-top: 1rem;
+            color: #6b7280;
+        }
+
+        /* Error State */
+        .error {
+            padding: 2rem;
+            text-align: center;
+            color: #dc2626;
+        }
+
+        .error h2 {
+            margin: 0 0 1rem 0;
+        }
+
+        /* Footer */
+        .api-footer {
+            background: #f9fafb;
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .api-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .api-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Print styles */
+        @media print {
+            .api-header {
+                background: white;
+                color: black;
+                border-bottom: 2px solid var(--primary-color);
+            }
+            .api-header .version {
+                background: var(--primary-color);
+                color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="api-header">
+        <h1>KGParl Fraktionsprotokolle API</h1>
+        <p>REST API für die Fraktionsprotokolle der Kommission für Geschichte des Parlamentarismus</p>
+        <span class="version">Version 0.1.0</span>
+    </header>
+
+    <div id="redoc-container">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Dokumentation wird geladen...</p>
+        </div>
+    </div>
+
+    <footer class="api-footer">
+        <p>
+            <strong>Kontakt:</strong>
+            <a href="mailto:info@kgparl.de">info@kgparl.de</a> |
+            <a href="https://www.kgparl.de" target="_blank" rel="noopener">www.kgparl.de</a>
+        </p>
+        <p>
+            Lizenziert unter <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+        </p>
+    </footer>
+
+    <!-- ReDoc Library -->
+    <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+
+    <script>
+        // ReDoc configuration
+        const redocOptions = {
+            theme: {
+                colors: {
+                    primary: {
+                        main: '#4d7310'
+                    },
+                    success: {
+                        main: '#22c55e'
+                    },
+                    warning: {
+                        main: '#f59e0b'
+                    },
+                    error: {
+                        main: '#ef4444'
+                    },
+                    text: {
+                        primary: '#1a1a1a',
+                        secondary: '#6b7280'
+                    },
+                    border: {
+                        dark: '#d1d5db',
+                        light: '#e5e7eb'
+                    }
+                },
+                typography: {
+                    fontSize: '15px',
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    headings: {
+                        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                        fontWeight: '600'
+                    },
+                    code: {
+                        fontFamily: "'Source Code Pro', 'Monaco', 'Consolas', monospace",
+                        fontSize: '14px'
+                    }
+                },
+                sidebar: {
+                    backgroundColor: '#f9fafb',
+                    textColor: '#1a1a1a'
+                },
+                rightPanel: {
+                    backgroundColor: '#1e293b'
+                }
+            },
+            hideDownloadButton: false,
+            hideHostname: false,
+            expandResponses: '200',
+            pathInMiddlePanel: true,
+            sortPropsAlphabetically: false,
+            nativeScrollbars: true
+        };
+
+        // Initialize ReDoc
+        function initRedoc() {
+            const container = document.getElementById('redoc-container');
+
+            // Try to load the spec
+            Redoc.init(
+                'openapi.yaml',
+                redocOptions,
+                container,
+                function(errors) {
+                    if (errors) {
+                        console.error('ReDoc initialization failed:', errors);
+                        container.innerHTML = `
+                            <div class="error">
+                                <h2>Fehler beim Laden der Dokumentation</h2>
+                                <p>Die OpenAPI-Spezifikation konnte nicht geladen werden.</p>
+                                <p>Stellen Sie sicher, dass die Datei <code>openapi.yaml</code> im selben Verzeichnis liegt.</p>
+                            </div>
+                        `;
+                    }
+                }
+            );
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initRedoc);
+        } else {
+            initRedoc();
+        }
+    </script>
+</body>
+</html>

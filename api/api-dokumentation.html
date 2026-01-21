@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGParl Fraktionsprotokolle API - Dokumentation</title>
+    <style>
+        :root {
+            --primary: #4d7310;
+            --primary-dark: #3d5c0d;
+            --text: #1a1a1a;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-alt: #f9fafb;
+            --border: #e5e7eb;
+            --code-bg: #1e293b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .info-item strong {
+            display: block;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .info-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Servers */
+        .servers {
+            margin-bottom: 2rem;
+        }
+
+        .server-url {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--code-bg);
+            color: #e2e8f0;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .server-label {
+            background: var(--primary);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: -apple-system, sans-serif;
+        }
+
+        /* Endpoints */
+        .endpoint-group {
+            margin-bottom: 2rem;
+        }
+
+        .endpoint-group h2 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .endpoint {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-alt);
+            cursor: pointer;
+        }
+
+        .endpoint-header:hover {
+            background: #f3f4f6;
+        }
+
+        .method {
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .method-get {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .method-post {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .path {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .endpoint-summary {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-left: auto;
+        }
+
+        .endpoint-body {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .endpoint-description {
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+
+        /* Parameters */
+        .params-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .params-section h4 {
+            font-size: 0.875rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .params-table th {
+            text-align: left;
+            padding: 0.5rem;
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        .params-table td {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .param-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: var(--primary-dark);
+        }
+
+        .param-required {
+            color: var(--error);
+            font-size: 0.75rem;
+        }
+
+        .param-type {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* Responses */
+        .response {
+            margin-bottom: 1rem;
+        }
+
+        .response-code {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        .response-200 {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .response-404 {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .response-500 {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-top: 0.5rem;
+        }
+
+        .code-block .key {
+            color: #7dd3fc;
+        }
+
+        .code-block .string {
+            color: #86efac;
+        }
+
+        .code-block .number {
+            color: #fcd34d;
+        }
+
+        .code-block .boolean {
+            color: #c4b5fd;
+        }
+
+        /* Schema */
+        .schema-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .schema-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .schema {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .schema-header {
+            background: var(--bg-alt);
+            padding: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .schema-body {
+            padding: 1rem;
+        }
+
+        .property {
+            display: flex;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .property:last-child {
+            border-bottom: none;
+        }
+
+        .property-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: var(--primary-dark);
+            min-width: 150px;
+        }
+
+        .property-type {
+            color: var(--text-light);
+            min-width: 100px;
+            font-size: 0.875rem;
+        }
+
+        .property-desc {
+            color: var(--text);
+            font-size: 0.875rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-alt);
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Collapsible */
+        .collapsible-content {
+            display: none;
+        }
+
+        .collapsible-content.open {
+            display: block;
+        }
+
+        .toggle-icon {
+            transition: transform 0.2s;
+        }
+
+        .toggle-icon.open {
+            transform: rotate(90deg);
+        }
+
+        /* Print */
+        @media print {
+            .header {
+                background: white;
+                color: black;
+                border-bottom: 3px solid var(--primary);
+            }
+            .collapsible-content {
+                display: block !important;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .endpoint-header {
+                flex-wrap: wrap;
+            }
+            .endpoint-summary {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+            .params-table {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>KGParl Fraktionsprotokolle API</h1>
+        <p>REST API für die Fraktionsprotokolle der Kommission für Geschichte des Parlamentarismus und der politischen Parteien (KGParl)</p>
+        <span class="version-badge">Version 0.1.0</span>
+    </header>
+
+    <main class="container">
+        <!-- Info -->
+        <section class="info-section">
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Kontakt</strong>
+                    <a href="mailto:info@kgparl.de">info@kgparl.de</a>
+                </div>
+                <div class="info-item">
+                    <strong>Website</strong>
+                    <a href="https://www.kgparl.de" target="_blank">www.kgparl.de</a>
+                </div>
+                <div class="info-item">
+                    <strong>Lizenz</strong>
+                    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Servers -->
+        <section class="servers">
+            <h3>Server</h3>
+            <div class="server-url">
+                <span class="server-label">Produktion</span>
+                https://api.fraktionsprotokolle.de
+            </div>
+            <div class="server-url">
+                <span class="server-label">Entwicklung</span>
+                http://localhost:8080
+            </div>
+        </section>
+
+        <!-- Endpoints: Info -->
+        <section class="endpoint-group">
+            <h2>Info</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="toggle-icon">&#9654;</span>
+                    <span class="method method-get">GET</span>
+                    <span class="path">/info</span>
+                    <span class="endpoint-summary">API-Informationen abrufen</span>
+                </div>
+                <div class="endpoint-body collapsible-content">
+                    <p class="endpoint-description">Gibt grundlegende Informationen über die API zurück.</p>
+
+                    <div class="params-section">
+                        <h4>Antworten</h4>
+                        <div class="response">
+                            <span class="response-code response-200">200</span>
+                            Erfolgreiche Antwort
+                            <div class="code-block">
+{
+  <span class="key">"name"</span>: <span class="string">"KGParl"</span>,
+  <span class="key">"version"</span>: <span class="string">"0.1.0"</span>
+}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Endpoints: Personen -->
+        <section class="endpoint-group">
+            <h2>Personen</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="toggle-icon">&#9654;</span>
+                    <span class="method method-get">GET</span>
+                    <span class="path">/persons</span>
+                    <span class="endpoint-summary">Personenliste abrufen</span>
+                </div>
+                <div class="endpoint-body collapsible-content">
+                    <p class="endpoint-description">Gibt eine paginierte Liste aller Personen im Register zurück. Unterstützt Suche und Filterung nach Anfangsbuchstaben.</p>
+
+                    <div class="params-section">
+                        <h4>Query-Parameter</h4>
+                        <table class="params-table">
+                            <tr>
+                                <th>Name</th>
+                                <th>Typ</th>
+                                <th>Beschreibung</th>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">page</span></td>
+                                <td><span class="param-type">integer</span></td>
+                                <td>Seitennummer (1-basiert). Standard: 1</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">per_page</span></td>
+                                <td><span class="param-type">integer</span></td>
+                                <td>Ergebnisse pro Seite (max. 250). Standard: 50</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">q</span></td>
+                                <td><span class="param-type">string</span></td>
+                                <td>Suchbegriff (durchsucht Nachname, Vorname, Registerbezeichnung). Standard: *</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">letter</span></td>
+                                <td><span class="param-type">string</span></td>
+                                <td>Filter nach Anfangsbuchstaben des Nachnamens</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">found</span></td>
+                                <td><span class="param-type">boolean</span></td>
+                                <td>Filter nach Personen mit/ohne Fundstellen in Protokollen</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="params-section">
+                        <h4>Antworten</h4>
+                        <div class="response">
+                            <span class="response-code response-200">200</span>
+                            Erfolgreiche Antwort
+                            <div class="code-block">
+{
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"document"</span>: {
+        <span class="key">"id"</span>: <span class="string">"BrandtWilly_1913-12-18"</span>,
+        <span class="key">"surname"</span>: <span class="string">"Brandt"</span>,
+        <span class="key">"forename"</span>: <span class="string">"Willy"</span>,
+        <span class="key">"reg"</span>: <span class="string">"Brandt, Willy"</span>,
+        <span class="key">"letter"</span>: <span class="string">"B"</span>,
+        <span class="key">"gnd"</span>: <span class="string">"118514768"</span>,
+        <span class="key">"birth"</span>: <span class="string">"1913-12-18"</span>,
+        <span class="key">"death"</span>: <span class="string">"1992-10-08"</span>,
+        <span class="key">"isMDB"</span>: <span class="boolean">true</span>,
+        <span class="key">"found"</span>: <span class="boolean">true</span>
+      },
+      <span class="key">"highlights"</span>: [],
+      <span class="key">"text_match"</span>: <span class="number">0</span>
+    }
+  ],
+  <span class="key">"pagination"</span>: {
+    <span class="key">"page"</span>: <span class="number">1</span>,
+    <span class="key">"per_page"</span>: <span class="number">50</span>,
+    <span class="key">"found"</span>: <span class="number">12847</span>,
+    <span class="key">"total_pages"</span>: <span class="number">257</span>
+  }
+}</div>
+                        </div>
+                        <div class="response">
+                            <span class="response-code response-500">500</span>
+                            Serverfehler
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="toggle-icon">&#9654;</span>
+                    <span class="method method-get">GET</span>
+                    <span class="path">/person/{id}</span>
+                    <span class="endpoint-summary">Einzelne Person abrufen</span>
+                </div>
+                <div class="endpoint-body collapsible-content">
+                    <p class="endpoint-description">Gibt detaillierte Informationen zu einer Person zurück.</p>
+
+                    <div class="params-section">
+                        <h4>Pfad-Parameter</h4>
+                        <table class="params-table">
+                            <tr>
+                                <th>Name</th>
+                                <th>Typ</th>
+                                <th>Beschreibung</th>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">id</span> <span class="param-required">*</span></td>
+                                <td><span class="param-type">string</span></td>
+                                <td>Eindeutige ID der Person (z.B. BrandtWilly_1913-12-18)</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="params-section">
+                        <h4>Antworten</h4>
+                        <div class="response">
+                            <span class="response-code response-200">200</span>
+                            Erfolgreiche Antwort
+                            <div class="code-block">
+{
+  <span class="key">"id"</span>: <span class="string">"BrandtWilly_1913-12-18"</span>,
+  <span class="key">"surname"</span>: <span class="string">"Brandt"</span>,
+  <span class="key">"forename"</span>: <span class="string">"Willy"</span>,
+  <span class="key">"reg"</span>: <span class="string">"Brandt, Willy"</span>,
+  <span class="key">"letter"</span>: <span class="string">"B"</span>,
+  <span class="key">"gnd"</span>: <span class="string">"118514768"</span>,
+  <span class="key">"birth"</span>: <span class="string">"1913-12-18"</span>,
+  <span class="key">"death"</span>: <span class="string">"1992-10-08"</span>,
+  <span class="key">"birth_place"</span>: <span class="string">"Lübeck"</span>,
+  <span class="key">"death_place"</span>: <span class="string">"Unkel"</span>,
+  <span class="key">"isMDB"</span>: <span class="boolean">true</span>,
+  <span class="key">"found"</span>: <span class="boolean">true</span>
+}</div>
+                        </div>
+                        <div class="response">
+                            <span class="response-code response-404">404</span>
+                            Person nicht gefunden
+                        </div>
+                        <div class="response">
+                            <span class="response-code response-500">500</span>
+                            Serverfehler
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Endpoints: Metadaten -->
+        <section class="endpoint-group">
+            <h2>Metadaten</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="toggle-icon">&#9654;</span>
+                    <span class="method method-get">GET</span>
+                    <span class="path">/parties</span>
+                    <span class="endpoint-summary">Fraktionsliste abrufen</span>
+                </div>
+                <div class="endpoint-body collapsible-content">
+                    <p class="endpoint-description">Gibt eine Liste aller Fraktionen mit der Anzahl der zugehörigen Protokolle zurück.</p>
+
+                    <div class="params-section">
+                        <h4>Antworten</h4>
+                        <div class="response">
+                            <span class="response-code response-200">200</span>
+                            Erfolgreiche Antwort
+                            <div class="code-block">
+[
+  { <span class="key">"name"</span>: <span class="string">"CDU/CSU"</span>, <span class="key">"count"</span>: <span class="number">1245</span> },
+  { <span class="key">"name"</span>: <span class="string">"SPD"</span>, <span class="key">"count"</span>: <span class="number">1312</span> },
+  { <span class="key">"name"</span>: <span class="string">"FDP"</span>, <span class="key">"count"</span>: <span class="number">987</span> },
+  { <span class="key">"name"</span>: <span class="string">"Grüne"</span>, <span class="key">"count"</span>: <span class="number">234</span> }
+]</div>
+                        </div>
+                        <div class="response">
+                            <span class="response-code response-500">500</span>
+                            Serverfehler
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="toggle-icon">&#9654;</span>
+                    <span class="method method-get">GET</span>
+                    <span class="path">/periods</span>
+                    <span class="endpoint-summary">Wahlperiodenliste abrufen</span>
+                </div>
+                <div class="endpoint-body collapsible-content">
+                    <p class="endpoint-description">Gibt eine Liste aller Wahlperioden mit der Anzahl der zugehörigen Protokolle zurück.</p>
+
+                    <div class="params-section">
+                        <h4>Antworten</h4>
+                        <div class="response">
+                            <span class="response-code response-200">200</span>
+                            Erfolgreiche Antwort
+                            <div class="code-block">
+[
+  { <span class="key">"name"</span>: <span class="string">"01"</span>, <span class="key">"count"</span>: <span class="number">89</span> },
+  { <span class="key">"name"</span>: <span class="string">"02"</span>, <span class="key">"count"</span>: <span class="number">102</span> },
+  { <span class="key">"name"</span>: <span class="string">"03"</span>, <span class="key">"count"</span>: <span class="number">156</span> }
+]</div>
+                        </div>
+                        <div class="response">
+                            <span class="response-code response-500">500</span>
+                            Serverfehler
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Endpoints: Protokolle -->
+        <section class="endpoint-group">
+            <h2>Protokolle</h2>
+
+            <div class="endpoint">
+                <div class="endpoint-header" onclick="toggleEndpoint(this)">
+                    <span class="toggle-icon">&#9654;</span>
+                    <span class="method method-get">GET</span>
+                    <span class="path">/calendar</span>
+                    <span class="endpoint-summary">Kalendereinträge abrufen</span>
+                </div>
+                <div class="endpoint-body collapsible-content">
+                    <p class="endpoint-description">Gibt eine paginierte Liste von Protokollen zurück, optional gefiltert nach Datumsbereich. Geeignet für Kalenderansichten.</p>
+
+                    <div class="params-section">
+                        <h4>Query-Parameter</h4>
+                        <table class="params-table">
+                            <tr>
+                                <th>Name</th>
+                                <th>Typ</th>
+                                <th>Beschreibung</th>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">page</span></td>
+                                <td><span class="param-type">integer</span></td>
+                                <td>Seitennummer (1-basiert). Standard: 1</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">per_page</span></td>
+                                <td><span class="param-type">integer</span></td>
+                                <td>Ergebnisse pro Seite (max. 250). Standard: 250</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">from</span></td>
+                                <td><span class="param-type">date</span></td>
+                                <td>Startdatum des Zeitraums (ISO 8601, z.B. 1949-01-01)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="param-name">to</span></td>
+                                <td><span class="param-type">date</span></td>
+                                <td>Enddatum des Zeitraums (ISO 8601, z.B. 1953-12-31)</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="params-section">
+                        <h4>Antworten</h4>
+                        <div class="response">
+                            <span class="response-code response-200">200</span>
+                            Erfolgreiche Antwort
+                            <div class="code-block">
+{
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="string">"cdu-csu-01_1949-09-07-t0000_EP"</span>,
+      <span class="key">"fraction"</span>: <span class="string">"CDU/CSU"</span>,
+      <span class="key">"startdate"</span>: <span class="string">"1949-09-07"</span>,
+      <span class="key">"name"</span>: <span class="string">"Fraktionssitzung am 7. September 1949"</span>,
+      <span class="key">"color"</span>: <span class="string">"#000000"</span>,
+      <span class="key">"items"</span>: [
+        {
+          <span class="key">"name"</span>: <span class="string">"Wahl des Bundeskanzlers"</span>,
+          <span class="key">"link"</span>: <span class="string">"#div_item_0"</span>
+        }
+      ]
+    }
+  ],
+  <span class="key">"pagination"</span>: {
+    <span class="key">"page"</span>: <span class="number">1</span>,
+    <span class="key">"per_page"</span>: <span class="number">250</span>,
+    <span class="key">"found"</span>: <span class="number">4523</span>,
+    <span class="key">"total_pages"</span>: <span class="number">19</span>
+  }
+}</div>
+                        </div>
+                        <div class="response">
+                            <span class="response-code response-500">500</span>
+                            Serverfehler
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schemas -->
+        <section class="schema-section">
+            <h2>Datenmodelle</h2>
+
+            <div class="schema">
+                <div class="schema-header">Person</div>
+                <div class="schema-body">
+                    <div class="property">
+                        <span class="property-name">id</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Eindeutige ID der Person</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">surname</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Nachname</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">forename</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Vorname</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">reg</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Registerbezeichnung (Nachname, Vorname)</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">letter</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Anfangsbuchstabe des Nachnamens</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">gnd</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">GND-Identifier (Gemeinsame Normdatei)</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">birth</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Geburtsdatum</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">death</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Sterbedatum</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">birth_place</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Geburtsort</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">death_place</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Sterbeort</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">isMDB</span>
+                        <span class="property-type">boolean</span>
+                        <span class="property-desc">War die Person Mitglied des Bundestages?</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">found</span>
+                        <span class="property-type">boolean</span>
+                        <span class="property-desc">Wurde die Person in Protokollen gefunden?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-header">Pagination</div>
+                <div class="schema-body">
+                    <div class="property">
+                        <span class="property-name">page</span>
+                        <span class="property-type">integer</span>
+                        <span class="property-desc">Aktuelle Seitennummer</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">per_page</span>
+                        <span class="property-type">integer</span>
+                        <span class="property-desc">Ergebnisse pro Seite</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">found</span>
+                        <span class="property-type">integer</span>
+                        <span class="property-desc">Gesamtanzahl der gefundenen Einträge</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">total_pages</span>
+                        <span class="property-type">integer</span>
+                        <span class="property-desc">Gesamtanzahl der Seiten</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-header">CalendarEntry</div>
+                <div class="schema-body">
+                    <div class="property">
+                        <span class="property-name">id</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Eindeutige ID des Protokolls</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">fraction</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Name der Fraktion</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">startdate</span>
+                        <span class="property-type">date</span>
+                        <span class="property-desc">Datum der Sitzung</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">name</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Titel des Protokolls</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">color</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Farbcode für Kalenderdarstellung</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">items</span>
+                        <span class="property-type">array</span>
+                        <span class="property-desc">Tagesordnungspunkte</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-header">FacetItem</div>
+                <div class="schema-body">
+                    <div class="property">
+                        <span class="property-name">name</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Name des Facettenwerts (z.B. Parteiname oder Wahlperiode)</span>
+                    </div>
+                    <div class="property">
+                        <span class="property-name">count</span>
+                        <span class="property-type">integer</span>
+                        <span class="property-desc">Anzahl der Dokumente mit diesem Wert</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schema">
+                <div class="schema-header">Error</div>
+                <div class="schema-body">
+                    <div class="property">
+                        <span class="property-name">error</span>
+                        <span class="property-type">string</span>
+                        <span class="property-desc">Fehlermeldung</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p><strong>Kontakt:</strong> <a href="mailto:info@kgparl.de">info@kgparl.de</a> | <a href="https://www.kgparl.de" target="_blank">www.kgparl.de</a></p>
+        <p>Lizenziert unter <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a></p>
+    </footer>
+
+    <script>
+        function toggleEndpoint(header) {
+            const body = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+
+            body.classList.toggle('open');
+            icon.classList.toggle('open');
+        }
+
+        // Open all endpoints on page load for better overview
+        document.querySelectorAll('.endpoint-header').forEach(header => {
+            const body = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            body.classList.add('open');
+            icon.classList.add('open');
+        });
+    </script>
+</body>
+</html>

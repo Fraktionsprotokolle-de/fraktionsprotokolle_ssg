@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGParl Fraktionsprotokolle API - Dokumentation</title>
+    <meta name="description" content="REST API Dokumentation für die Fraktionsprotokolle der KGParl">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4d7310;
+            --primary-dark: #3d5c0d;
+            --text-color: #1a1a1a;
+            --bg-color: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Custom Header */
+        .api-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .api-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .api-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .api-header .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        /* Footer */
+        .api-footer {
+            background: #f9fafb;
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .api-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .api-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="api-header">
+        <h1>KGParl Fraktionsprotokolle API</h1>
+        <p>REST API für die Fraktionsprotokolle der Kommission für Geschichte des Parlamentarismus</p>
+        <span class="version">Version 0.1.0</span>
+    </header>
+
+    <div id="redoc-container"></div>
+
+    <footer class="api-footer">
+        <p>
+            <strong>Kontakt:</strong>
+            <a href="mailto:info@kgparl.de">info@kgparl.de</a> |
+            <a href="https://www.kgparl.de" target="_blank" rel="noopener">www.kgparl.de</a>
+        </p>
+        <p>
+            Lizenziert unter <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>
+        </p>
+    </footer>
+
+    <!-- ReDoc Library -->
+    <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+
+    <script>
+        // Embedded OpenAPI specification
+        const spec = {
+            "openapi": "3.0.3",
+            "info": {
+                "title": "KGParl Fraktionsprotokolle API",
+                "description": "REST API für die Fraktionsprotokolle der Kommission für Geschichte des Parlamentarismus und der politischen Parteien (KGParl).\n\nDie API bietet Zugriff auf:\n- Protokolle der Fraktionssitzungen (1949-2005)\n- Personenregister\n- Fraktionen und Wahlperioden\n\n**Basis-URL:** `https://api.fraktionsprotokolle.de` (Produktion)",
+                "version": "0.1.0",
+                "contact": {
+                    "name": "KGParl",
+                    "url": "https://www.kgparl.de",
+                    "email": "info@kgparl.de"
+                },
+                "license": {
+                    "name": "CC BY 4.0",
+                    "url": "https://creativecommons.org/licenses/by/4.0/"
+                }
+            },
+            "servers": [
+                {
+                    "url": "https://api.fraktionsprotokolle.de",
+                    "description": "Produktionsserver"
+                },
+                {
+                    "url": "http://localhost:8080",
+                    "description": "Lokaler Entwicklungsserver"
+                }
+            ],
+            "tags": [
+                { "name": "Info", "description": "API-Informationen" },
+                { "name": "Personen", "description": "Personenregister" },
+                { "name": "Protokolle", "description": "Fraktionsprotokolle und Kalender" },
+                { "name": "Metadaten", "description": "Fraktionen und Wahlperioden" }
+            ],
+            "paths": {
+                "/info": {
+                    "get": {
+                        "tags": ["Info"],
+                        "summary": "API-Informationen abrufen",
+                        "description": "Gibt grundlegende Informationen über die API zurück.",
+                        "operationId": "getInfo",
+                        "responses": {
+                            "200": {
+                                "description": "Erfolgreiche Antwort",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/ApiInfo" },
+                                        "example": { "name": "KGParl", "version": "0.1.0" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/persons": {
+                    "get": {
+                        "tags": ["Personen"],
+                        "summary": "Personenliste abrufen",
+                        "description": "Gibt eine paginierte Liste aller Personen im Register zurück. Unterstützt Suche und Filterung nach Anfangsbuchstaben.",
+                        "operationId": "getPersons",
+                        "parameters": [
+                            {
+                                "name": "page",
+                                "in": "query",
+                                "description": "Seitennummer (1-basiert)",
+                                "schema": { "type": "integer", "minimum": 1, "default": 1 },
+                                "example": 1
+                            },
+                            {
+                                "name": "per_page",
+                                "in": "query",
+                                "description": "Anzahl der Ergebnisse pro Seite (max. 250)",
+                                "schema": { "type": "integer", "minimum": 1, "maximum": 250, "default": 50 },
+                                "example": 50
+                            },
+                            {
+                                "name": "q",
+                                "in": "query",
+                                "description": "Suchbegriff (durchsucht Nachname, Vorname, Registerbezeichnung)",
+                                "schema": { "type": "string", "default": "*" },
+                                "example": "Müller"
+                            },
+                            {
+                                "name": "letter",
+                                "in": "query",
+                                "description": "Filter nach Anfangsbuchstaben des Nachnamens",
+                                "schema": { "type": "string", "maxLength": 1 },
+                                "example": "M"
+                            },
+                            {
+                                "name": "found",
+                                "in": "query",
+                                "description": "Filter nach Personen mit/ohne Fundstellen in Protokollen",
+                                "schema": { "type": "boolean" },
+                                "example": true
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Erfolgreiche Antwort",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/PersonListResponse" }
+                                    }
+                                }
+                            },
+                            "500": {
+                                "description": "Serverfehler",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Error" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/person/{id}": {
+                    "get": {
+                        "tags": ["Personen"],
+                        "summary": "Einzelne Person abrufen",
+                        "description": "Gibt detaillierte Informationen zu einer Person zurück.",
+                        "operationId": "getPerson",
+                        "parameters": [
+                            {
+                                "name": "id",
+                                "in": "path",
+                                "required": true,
+                                "description": "Eindeutige ID der Person",
+                                "schema": { "type": "string" },
+                                "example": "BrandtWilly_1913-12-18"
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Erfolgreiche Antwort",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Person" }
+                                    }
+                                }
+                            },
+                            "404": {
+                                "description": "Person nicht gefunden",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Error" }
+                                    }
+                                }
+                            },
+                            "500": {
+                                "description": "Serverfehler",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Error" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/parties": {
+                    "get": {
+                        "tags": ["Metadaten"],
+                        "summary": "Fraktionsliste abrufen",
+                        "description": "Gibt eine Liste aller Fraktionen mit der Anzahl der zugehörigen Protokolle zurück.",
+                        "operationId": "getParties",
+                        "responses": {
+                            "200": {
+                                "description": "Erfolgreiche Antwort",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "array",
+                                            "items": { "$ref": "#/components/schemas/FacetItem" }
+                                        },
+                                        "example": [
+                                            { "name": "CDU/CSU", "count": 1245 },
+                                            { "name": "SPD", "count": 1312 },
+                                            { "name": "FDP", "count": 987 },
+                                            { "name": "Grüne", "count": 234 }
+                                        ]
+                                    }
+                                }
+                            },
+                            "500": {
+                                "description": "Serverfehler",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Error" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/periods": {
+                    "get": {
+                        "tags": ["Metadaten"],
+                        "summary": "Wahlperiodenliste abrufen",
+                        "description": "Gibt eine Liste aller Wahlperioden mit der Anzahl der zugehörigen Protokolle zurück.",
+                        "operationId": "getPeriods",
+                        "responses": {
+                            "200": {
+                                "description": "Erfolgreiche Antwort",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "array",
+                                            "items": { "$ref": "#/components/schemas/FacetItem" }
+                                        },
+                                        "example": [
+                                            { "name": "01", "count": 89 },
+                                            { "name": "02", "count": 102 },
+                                            { "name": "03", "count": 156 }
+                                        ]
+                                    }
+                                }
+                            },
+                            "500": {
+                                "description": "Serverfehler",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Error" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "/calendar": {
+                    "get": {
+                        "tags": ["Protokolle"],
+                        "summary": "Kalendereinträge abrufen",
+                        "description": "Gibt eine paginierte Liste von Protokollen zurück, optional gefiltert nach Datumsbereich. Geeignet für Kalenderansichten.",
+                        "operationId": "getCalendar",
+                        "parameters": [
+                            {
+                                "name": "page",
+                                "in": "query",
+                                "description": "Seitennummer (1-basiert)",
+                                "schema": { "type": "integer", "minimum": 1, "default": 1 },
+                                "example": 1
+                            },
+                            {
+                                "name": "per_page",
+                                "in": "query",
+                                "description": "Anzahl der Ergebnisse pro Seite (max. 250)",
+                                "schema": { "type": "integer", "minimum": 1, "maximum": 250, "default": 250 },
+                                "example": 100
+                            },
+                            {
+                                "name": "from",
+                                "in": "query",
+                                "description": "Startdatum des Zeitraums (ISO 8601)",
+                                "schema": { "type": "string", "format": "date" },
+                                "example": "1949-01-01"
+                            },
+                            {
+                                "name": "to",
+                                "in": "query",
+                                "description": "Enddatum des Zeitraums (ISO 8601)",
+                                "schema": { "type": "string", "format": "date" },
+                                "example": "1953-12-31"
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "Erfolgreiche Antwort",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/CalendarResponse" }
+                                    }
+                                }
+                            },
+                            "500": {
+                                "description": "Serverfehler",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/Error" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "components": {
+                "schemas": {
+                    "ApiInfo": {
+                        "type": "object",
+                        "properties": {
+                            "name": { "type": "string", "description": "Name der API" },
+                            "version": { "type": "string", "description": "Version der API" }
+                        },
+                        "required": ["name", "version"]
+                    },
+                    "Pagination": {
+                        "type": "object",
+                        "properties": {
+                            "page": { "type": "integer", "description": "Aktuelle Seitennummer", "example": 1 },
+                            "per_page": { "type": "integer", "description": "Ergebnisse pro Seite", "example": 50 },
+                            "found": { "type": "integer", "description": "Gesamtanzahl der gefundenen Einträge", "example": 12847 },
+                            "total_pages": { "type": "integer", "description": "Gesamtanzahl der Seiten", "example": 257 }
+                        },
+                        "required": ["page", "per_page", "found", "total_pages"]
+                    },
+                    "Person": {
+                        "type": "object",
+                        "properties": {
+                            "id": { "type": "string", "description": "Eindeutige ID der Person", "example": "BrandtWilly_1913-12-18" },
+                            "rec_id": { "type": "string", "description": "Record-ID" },
+                            "forename": { "type": "string", "description": "Vorname", "example": "Willy" },
+                            "surname": { "type": "string", "description": "Nachname", "example": "Brandt" },
+                            "letter": { "type": "string", "description": "Anfangsbuchstabe des Nachnamens", "example": "B" },
+                            "reg": { "type": "string", "description": "Registerbezeichnung (Nachname, Vorname)", "example": "Brandt, Willy" },
+                            "gnd": { "type": "string", "description": "GND-Identifier (Gemeinsame Normdatei)", "example": "118514768" },
+                            "birth": { "type": "string", "description": "Geburtsdatum", "example": "1913-12-18" },
+                            "death": { "type": "string", "description": "Sterbedatum", "example": "1992-10-08" },
+                            "birth_place": { "type": "string", "description": "Geburtsort", "example": "Lübeck" },
+                            "death_place": { "type": "string", "description": "Sterbeort", "example": "Unkel" },
+                            "birth_country": { "type": "string", "description": "Geburtsland" },
+                            "death_country": { "type": "string", "description": "Sterbeland" },
+                            "isMDB": { "type": "boolean", "description": "War die Person Mitglied des Bundestages?", "example": true },
+                            "found": { "type": "boolean", "description": "Wurde die Person in Protokollen gefunden?", "example": true }
+                        }
+                    },
+                    "PersonHit": {
+                        "type": "object",
+                        "properties": {
+                            "document": { "$ref": "#/components/schemas/Person" },
+                            "highlights": { "type": "array", "description": "Hervorgehobene Suchtreffer", "items": { "type": "object" } },
+                            "text_match": { "type": "integer", "description": "Relevanz-Score" }
+                        }
+                    },
+                    "PersonListResponse": {
+                        "type": "object",
+                        "properties": {
+                            "data": { "type": "array", "items": { "$ref": "#/components/schemas/PersonHit" } },
+                            "pagination": { "$ref": "#/components/schemas/Pagination" }
+                        },
+                        "required": ["data", "pagination"]
+                    },
+                    "FacetItem": {
+                        "type": "object",
+                        "properties": {
+                            "name": { "type": "string", "description": "Name des Facettenwerts", "example": "CDU/CSU" },
+                            "count": { "type": "integer", "description": "Anzahl der Dokumente mit diesem Wert", "example": 1245 }
+                        },
+                        "required": ["name", "count"]
+                    },
+                    "CalendarEntry": {
+                        "type": "object",
+                        "properties": {
+                            "id": { "type": "string", "description": "Eindeutige ID des Protokolls", "example": "cdu-csu-01_1949-09-07-t0000_EP" },
+                            "fraction": { "type": "string", "description": "Name der Fraktion", "example": "CDU/CSU" },
+                            "startdate": { "type": "string", "format": "date", "description": "Datum der Sitzung", "example": "1949-09-07" },
+                            "name": { "type": "string", "description": "Titel des Protokolls", "example": "Fraktionssitzung am 7. September 1949" },
+                            "color": { "type": "string", "description": "Farbcode für Kalenderdarstellung", "example": "#000000" },
+                            "items": { "type": "array", "description": "Tagesordnungspunkte", "items": { "$ref": "#/components/schemas/CalendarItem" } }
+                        }
+                    },
+                    "CalendarItem": {
+                        "type": "object",
+                        "properties": {
+                            "name": { "type": "string", "description": "Bezeichnung des Tagesordnungspunkts", "example": "Wahl des Bundeskanzlers" },
+                            "link": { "type": "string", "description": "Anker-Link im Dokument", "example": "#div_item_0" }
+                        }
+                    },
+                    "CalendarResponse": {
+                        "type": "object",
+                        "properties": {
+                            "data": { "type": "array", "items": { "$ref": "#/components/schemas/CalendarEntry" } },
+                            "pagination": { "$ref": "#/components/schemas/Pagination" }
+                        },
+                        "required": ["data", "pagination"]
+                    },
+                    "Error": {
+                        "type": "object",
+                        "properties": {
+                            "error": { "type": "string", "description": "Fehlermeldung", "example": "Person not found" }
+                        },
+                        "required": ["error"]
+                    }
+                }
+            }
+        };
+
+        // ReDoc configuration
+        const redocOptions = {
+            theme: {
+                colors: {
+                    primary: { main: '#4d7310' },
+                    success: { main: '#22c55e' },
+                    warning: { main: '#f59e0b' },
+                    error: { main: '#ef4444' },
+                    text: { primary: '#1a1a1a', secondary: '#6b7280' },
+                    border: { dark: '#d1d5db', light: '#e5e7eb' }
+                },
+                typography: {
+                    fontSize: '15px',
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    headings: {
+                        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                        fontWeight: '600'
+                    },
+                    code: {
+                        fontFamily: "'Source Code Pro', 'Monaco', 'Consolas', monospace",
+                        fontSize: '14px'
+                    }
+                },
+                sidebar: { backgroundColor: '#f9fafb', textColor: '#1a1a1a' },
+                rightPanel: { backgroundColor: '#1e293b' }
+            },
+            hideDownloadButton: false,
+            hideHostname: false,
+            expandResponses: '200',
+            pathInMiddlePanel: true,
+            sortPropsAlphabetically: false,
+            nativeScrollbars: true
+        };
+
+        // Initialize ReDoc with embedded spec
+        Redoc.init(spec, redocOptions, document.getElementById('redoc-container'));
+    </script>
+</body>
+</html>
